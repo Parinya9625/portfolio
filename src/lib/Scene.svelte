@@ -11,7 +11,7 @@
     import { GLTF } from "@threlte/extras";
     import { DEG2RAD } from "three/src/math/MathUtils";
     import { MeshStandardMaterial, DoubleSide, PlaneGeometry } from "three";
-    import { isModelLoading } from "../scripts/store";
+    import { isModelLoading } from "../store";
 
     let screenWidth: number;
 

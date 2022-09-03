@@ -2,7 +2,7 @@
     import Scene from "./lib/Scene.svelte";
     import Welcome from "./lib/Welcome.svelte";
     import Loading from "./lib/Loading.svelte";
-    import { isModelLoading } from "./scripts/store";
+    import { isModelLoading } from "./store";
     
 </script>
 
