@@ -53,7 +53,7 @@
         <DirectionalLight shadow intensity={0.5} position={{ y: 50 }} />
 
         <!-- model -->
-        <GLTF url="../assets/room.gltf" castShadow on:load={onFinishLoad} />
+        <GLTF url="../assets/room.gltf" castShadow useDraco={true} on:load={onFinishLoad} />
 
         <!-- floor -->
         <Mesh
