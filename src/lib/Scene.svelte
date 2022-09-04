@@ -23,8 +23,8 @@
     let cameraLALarge: LookAt = { x: 1.5, y: 2.3, z: 3 };
     let cameraLASmall: LookAt = { x: 1.5, y: 2.3, z: 0 };
 
-    $: cameraPostion = screenWidth > 1024 ? cameraPosLarge : cameraPosSmall;
-    $: cameraLookAt = screenWidth > 1024 ? cameraLALarge : cameraLASmall;
+    $: cameraPostion = screenWidth >= 1024 ? cameraPosLarge : cameraPosSmall;
+    $: cameraLookAt = screenWidth >= 1024 ? cameraLALarge : cameraLASmall;
 
     function onFinishLoad() {
         isModelLoading.update(() => false);
