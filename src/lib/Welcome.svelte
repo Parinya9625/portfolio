@@ -7,7 +7,7 @@
 
 <style>
     section > div {
-        grid-column: 7 / 12;
+        grid-column: 5 / 12;
         margin-top: 12vh;
     }
 
@@ -29,6 +29,14 @@
     @media only screen and (max-width: 1024px) {
         section > div {
             grid-column: 2;
+        }
+
+        #name {
+            font-size: 9.5vmin;
+        }
+        
+        #description {
+            font-size: 3.5vmin;
         }
     }
 </style>
