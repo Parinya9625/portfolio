@@ -1,21 +1,13 @@
 <script lang="ts">
     import Scene from "./lib/Scene.svelte";
-    import Welcome from "./lib/Welcome.svelte";
     import Loading from "./lib/Loading.svelte";
-    import { isModelLoading } from "./store";
-    
+    import Content from "./lib/Content.svelte";
 </script>
 
 <main>
     <Scene />
 
-    {#if $isModelLoading}
-        <Loading />
-    {:else}
-        <Welcome />
-    {/if}
-
+    <Loading>
+        <Content />
+    </Loading>
 </main>
-
-<style>
-</style>

@@ -1,10 +1,35 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition';
+    import { fade } from "svelte/transition";
+    import { tweened } from "svelte/motion";
+    import { useProgress } from "@threlte/extras";
+
+    const { progress } = useProgress();
+    let isLoading: boolean = true;
+
+    const progressMotion = tweened(0, {
+        duration: 400,
+    });
+
+    progress.subscribe(value => {
+        progressMotion.set(value);
+        
+        // finish loaded
+        if (value == 1) {
+            setTimeout(() => {
+                isLoading = false;
+            }, 1000);
+        }
+    });
 </script>
 
-<div transition:fade>
-    <h1> Loading... </h1>
-</div>
+{#if isLoading}
+    <div transition:fade>
+        <progress value={$progressMotion} min=0 max=1 />
+    </div>
+{:else}
+    <!-- CONTENT -->
+    <slot />
+{/if}
 
 <style>
     div {
