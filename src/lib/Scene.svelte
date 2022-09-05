@@ -5,60 +5,102 @@
         PerspectiveCamera,
         AmbientLight,
         DirectionalLight,
-        type Position,
-type Rotation,
+        Object3D,
     } from "@threlte/core";
     import { GLTF } from "@threlte/extras";
     import { DEG2RAD } from "three/src/math/MathUtils";
-    import { MeshStandardMaterial, DoubleSide, PlaneGeometry, Vector3 } from "three";
+    import {
+        MeshStandardMaterial,
+        DoubleSide,
+        PlaneGeometry,
+        Vector3,
+        CubicBezierCurve3,
+    } from "three";
     import InsideCanvas from "./InsideCanvas.svelte";
+    import {
+        cameraTargetTo,
+        cameraTargetFrom,
+        timelineProgress,
+    } from "../store";
+    import { onMount } from "svelte";
 
-    function V3DEG2RAD(vector: {x?: number, y?: number, z?: number}) {
-        return {x: DEG2RAD * vector.x, y: DEG2RAD * vector.y, z: DEG2RAD * vector.z}
+    function V3DEG2RAD(vector: { x?: number; y?: number; z?: number }) {
+        return {
+            x: DEG2RAD * vector.x,
+            y: DEG2RAD * vector.y,
+            z: DEG2RAD * vector.z,
+        };
     }
 
     let screenWidth: number;
 
-    // Large screen
-    let cameraPosLarge: Position = {x: -7.5, y: 6.5, z: 11.7};
-    let cameraRotLarge: Rotation = V3DEG2RAD({x: -27.5, y: -43.7, z: -20});
+    let cameraLineToScreen: CubicBezierCurve3 = new CubicBezierCurve3(
+        new Vector3(0, 0, 0),
+        new Vector3(0, 0, 0),
+        new Vector3(0, 0, 0),
+        new Vector3(0, 0, 0)
+    );
+    let cameraLineFromScreen: CubicBezierCurve3 = new CubicBezierCurve3(
+        new Vector3(0, 0, 0),
+        new Vector3(0, 0, 0),
+        new Vector3(0, 0, 0),
+        new Vector3(0, 0, 0)
+    );
 
-    // Small screen
-    let cameraPosSmall: Position = {x: -13.5, y: 9.5, z: 14.2};
-    let cameraRotSmall: Rotation = V3DEG2RAD({x: -27.5, y: -43.7, z: -20});
+    $: cameraPosition =
+        $timelineProgress <= 1
+            ? cameraLineToScreen.getPoint($timelineProgress)
+            : cameraLineFromScreen.getPoint($timelineProgress - 1);
+    $: targetToStartPosition =
+        screenWidth >= 1024 ? { x: 5, y: 0.5 } : { x: 1.55, y: 2.75 };
+    let targetFromStartPosition = { x: 0, y: 0.5, z: -23 };
 
+    function resize() {
+        screenWidth = window.innerWidth;
 
-    // let cameraPosLarge: Position = { x: -9.1, y: 6.5, z: 11.5 };
-    // let cameraPosSmall: Position = { x: -13.1, y: 10.5, z: 15.5 };
+        cameraLineToScreen = new CubicBezierCurve3(
+            screenWidth >= 1024
+                ? new Vector3(-7.5, 6.5, 11.7)
+                : new Vector3(-13.1, 10.5, 15.5),
+            new Vector3(0, 6, 8),
+            new Vector3(0, 4.5, 5),
+            new Vector3(0, 2, 1.8)
+        );
+        cameraLineFromScreen = new CubicBezierCurve3(
+            new Vector3(0, 2, 1.8),
+            new Vector3(0, 2, 5),
+            new Vector3(7, 4, 5),
+            screenWidth >= 1024
+                ? new Vector3(8.8, 3.8, -6.8)
+                : new Vector3(13, 10.5, -15.5)
+        );
 
-    // let cameraLALarge: LookAt = { x: 1.5, y: 2.3, z: 3 };
-    // let cameraLASmall: LookAt = { x: 1.5, y: 2.3, z: 0 };
+        if ($timelineProgress <= 1)
+            cameraPosition = cameraLineToScreen.getPoint($timelineProgress);
+        if ($timelineProgress <= 2) {
+            cameraPosition = cameraLineFromScreen.getPoint(
+                $timelineProgress - 1
+            );
+        }
+    }
 
-    $: cameraPosition = screenWidth >= 1024 ? cameraPosLarge : cameraPosSmall;
-    $: cameraRotation = screenWidth >= 1024 ? cameraRotLarge : cameraRotSmall;
-
-    // rotate
-    // x -> + up, - down
-    // y -> + left, - right
-    // z -> + v-| , - |-V 
-
-    // position
-    // x -> + right, - left
-    // y -> + up, - down
-    // z -> + back, - forward (face look at mornitor) 
-
+    onMount(() => {
+        resize();
+    });
 </script>
 
-<svelte:window bind:innerWidth={screenWidth} />
-<!-- lookAt={cameraLookAt} -->
+<svelte:window bind:innerWidth={screenWidth} on:resize={resize} />
+
 <div id="scene">
     <Canvas>
         <!-- camera -->
         <PerspectiveCamera
             fov={24}
             position={cameraPosition}
-            rotation={cameraRotation}>
-        </PerspectiveCamera>
+            lookAt={$timelineProgress <= 1
+                ? $cameraTargetTo
+                : $cameraTargetFrom}
+        />
 
         <!-- light -->
         <AmbientLight intensity={1} />
@@ -67,11 +109,23 @@ type Rotation,
         <!-- model -->
         <GLTF url="../assets/room.gltf" castShadow useDraco={true} />
 
+        <!-- Look at -->
+        <!-- Start to Screen -->
+        <Object3D
+            bind:object={$cameraTargetTo}
+            position={targetToStartPosition}
+        />
+        <!-- Screen to End -->
+        <Object3D
+            bind:object={$cameraTargetFrom}
+            position={targetFromStartPosition}
+        />
+
         <!-- floor -->
         <Mesh
             receiveShadow
             rotation={{ x: -90 * (Math.PI / 180) }}
-            geometry={new PlaneGeometry(200, 200)}
+            geometry={new PlaneGeometry(100, 100)}
             material={new MeshStandardMaterial({
                 side: DoubleSide,
                 color: 0x5b98e3,
@@ -91,5 +145,7 @@ type Rotation,
         height: 100vh;
         width: 100vw;
         z-index: -1;
+
+        background-color: rgb(208, 223, 234);
     }
 </style>
