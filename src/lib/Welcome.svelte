@@ -8,7 +8,7 @@
 <style>
     section > div {
         grid-column: 5 / 12;
-        margin-top: 12vh;
+        margin-top: 8vh;
     }
 
     p {
