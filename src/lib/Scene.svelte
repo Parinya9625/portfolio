@@ -53,7 +53,7 @@
             : cameraLineFromScreen.getPoint($timelineProgress - 1);
     $: targetToStartPosition =
         screenWidth >= 1024 ? { x: 5, y: 0.5 } : { x: 1.55, y: 2.75 };
-    let targetFromStartPosition = { x: 0, y: 0.5, z: -23 };
+    let targetFromStartPosition = { x: 0, y: 0.35, z: -19 };
 
     function resize() {
         screenWidth = window.innerWidth;
