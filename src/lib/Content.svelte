@@ -2,7 +2,6 @@
     import { gsap } from "gsap";
     import { ScrollTrigger } from "gsap/ScrollTrigger";
     import { onMount } from "svelte";
-    import Welcome from "./Welcome.svelte";
     import {
         useCanvas,
         cameraTargetTo,
@@ -10,11 +9,18 @@
         timelineProgress,
     } from "../store";
 
+    import Welcome from "./Welcome.svelte";
+    import Contact from "./Contact.svelte";
+
     let screenWidth;
-    let moveToScreen;
-    let moveFromScreen;
+    let scrollY;
     let camera = $useCanvas.camera;
     let updateCanvas = $useCanvas.invalidate;
+    let startTimeline: boolean = false;
+
+    let moveToScreen;
+    let moveFromScreen;
+    let contact;
 
     let tl_moveToScreen: gsap.core.Timeline;
     let tl_moveFromScreen: gsap.core.Timeline;
@@ -28,8 +34,7 @@
                 start: "top top",
                 end: "+=200%",
                 pin: true,
-                scrub: true,
-                markers: true,
+                scrub: 1,
             },
         });
 
@@ -39,57 +44,165 @@
                 start: "top top",
                 end: "+=200%",
                 pin: true,
-                scrub: true,
-                markers: true,
+                scrub: 1,
             },
         });
 
-        resize();
+        // gsap.timeline({
+        //     scrollTrigger: {
+        //         trigger: contact,
+        //         start: "top center",
+        //         pin: true,
+        //         scrub: 1,
+        //         markers: true,
+        //     },
+        //     paused: true,
+        // }).fromTo(contact, {opacity: 0, duration: 1}, {opacity: 1, duration: 1});
+
+        let mm = gsap.matchMedia();
+
+        // phone / tablet
+        mm.add("(max-width: 1024px)", () => {
+            tl_moveToScreen.fromTo($cameraTargetTo.position, {
+                x: 1.55,
+                y: 2.75,
+                z: 0,
+                onUpdate: update,
+            }, {
+                x: 0,
+                y: 1.825,
+                z: 0,
+                onUpdate: update,
+                onStart: function() {
+                    startTimeline = true;
+                },
+            });
+
+            tl_moveFromScreen.fromTo($cameraTargetFrom.position, {
+                x: 0,
+                y: 0.35,
+                z: -19,
+                onUpdate: update,
+            }, {
+                x: -4.6,
+                y: 0,
+                z: 8,
+                onUpdate: update,
+            });
+            
+        });
+
+        // desktop
+        mm.add("(min-width: 1025px)", () => {
+            tl_moveToScreen.fromTo($cameraTargetTo.position, {
+                x: 5,
+                y: 0.5,
+                onUpdate: update,
+            }, {
+                x: 0,
+                y: 1.825,
+                z: 0,
+                onUpdate: update,
+                onStart: function() {
+                    startTimeline = true;
+                },
+            });
+
+            tl_moveFromScreen.fromTo($cameraTargetFrom.position, {
+                x: 0,
+                y: 0.35,
+                z: -19,
+                onUpdate: update,
+            }, {
+                x: -2,
+                y: 0.5,
+                z: 8,
+                onUpdate: update,
+            });
+
+        });
     });
+    
+    
+    function update() {
+        updateCanvas();
 
-    function resize() {
-        screenWidth = window.innerWidth;
-
-        tl_moveToScreen.clear();
-
-        tl_moveToScreen.to($cameraTargetTo.position, {
-            x: 0,
-            y: 1.825,
-            z: 0,
-            onUpdate: function () {
-                updateCanvas();
-                timelineProgress.set(
-                    tl_moveToScreen.progress() + tl_moveFromScreen.progress()
-                );
-            },
-        });
-
-        tl_moveFromScreen.to($cameraTargetFrom.position, {
-            x: screenWidth >= 1024 ? -2 : -4.6,
-            y: screenWidth >= 1024 ? 0.5 : 0,
-            z: screenWidth >= 1024 ? 8 : 8,
-            onUpdate: function () {
-                updateCanvas();
-                timelineProgress.set(
-                    tl_moveToScreen.progress() + tl_moveFromScreen.progress()
-                );
-            },
-        });
+        // quick fix - tl_mts 1, tl_mfs 0 when start page - dny
+        if (tl_moveToScreen.progress() + tl_moveFromScreen.progress() == 0)
+            startTimeline = false;
+        
+        timelineProgress.set(startTimeline ? tl_moveToScreen.progress() + tl_moveFromScreen.progress() : 0);
     }
 </script>
 
-<svelte:window on:resize={resize} />
+<svelte:window on:resize={update} bind:scrollY={scrollY} />
+
+<nav id="top">
+    <a href="#toScreen"> To Screen </a>
+    <a href="#fromScreen"> from Screen </a>
+    <a href="#contact"> Contact </a>
+</nav>
+{#if scrollY > 200}
+    <a class="top-btn" href="#top"> <i class="fa-solid fa-arrow-up"></i> </a>
+{/if}
+
+
 
 <Welcome />
+
 <div bind:this={moveToScreen}>
-    <h1>tl_moveToScreen</h1>
+    <!-- <h1>tl_moveToScreen</h1> -->
 </div>
+
+<div id="toScreen" />
 <Welcome />
+
 <Welcome />
+
+<div id="fromScreen" />
 <div bind:this={moveFromScreen}>
-    <h1>tl_moveFromScreen</h1>
+    <!-- <h1>tl_moveFromScreen</h1> -->
 </div>
-<Welcome />
+
+<div bind:this={contact} id="contact">
+    <Contact />
+</div>
 
 <style>
+    @import "../assets/fontawesome/css/all.css";
+
+    nav {
+        display: flex;
+        padding: 4vmin;
+        justify-content: flex-end;
+        gap: 2vmin;
+    }
+    nav > a {
+        background-color: rgba(255, 255, 255, 0.75);
+        border-radius: 3vmin;
+        padding: 2vmin 4vmin;
+        font-size: 1.75vmin;
+        transition: 200ms;
+        text-decoration: none;
+        color: black;
+    }
+    nav > a:hover, .top-btn:hover {
+        background-color: rgba(255, 255, 255, 1);
+        box-shadow: 0 0 5px 0 rgba(0,0,0,0.1);
+        transform: scale(1.05, 1.05);
+    }
+
+    .top-btn {
+        z-index: 10;
+        background-color: rgba(255, 255, 255, 0.75);
+        padding: 24px 29px;
+        border-radius: 40px;
+        position: fixed;
+        bottom: 3vmin;
+        right: 3vmin;
+        font-size: 24px;
+        transition: 200ms;
+        text-decoration: none;
+        color: black;
+    }
 </style>
