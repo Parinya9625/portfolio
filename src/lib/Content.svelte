@@ -10,6 +10,8 @@
     } from "../store";
 
     import Welcome from "./Welcome.svelte";
+    import AboutMe from "./AboutMe.svelte";
+    import Projects from "./Projects.svelte";
     import Contact from "./Contact.svelte";
 
     let screenWidth;
@@ -28,11 +30,13 @@
     onMount(() => {
         gsap.registerPlugin(ScrollTrigger);
 
+        // ----- MOVE CAMERA -----
+
         tl_moveToScreen = gsap.timeline({
             scrollTrigger: {
                 trigger: moveToScreen,
                 start: "top top",
-                end: "+=200%",
+                end: "+=150%",
                 pin: true,
                 scrub: 1,
             },
@@ -42,22 +46,11 @@
             scrollTrigger: {
                 trigger: moveFromScreen,
                 start: "top top",
-                end: "+=200%",
+                end: "+=150%",
                 pin: true,
                 scrub: 1,
             },
         });
-
-        // gsap.timeline({
-        //     scrollTrigger: {
-        //         trigger: contact,
-        //         start: "top center",
-        //         pin: true,
-        //         scrub: 1,
-        //         markers: true,
-        //     },
-        //     paused: true,
-        // }).fromTo(contact, {opacity: 0, duration: 1}, {opacity: 1, duration: 1});
 
         let mm = gsap.matchMedia();
 
@@ -121,6 +114,33 @@
             });
 
         });
+
+        // -----  -----
+        function fadePage(element: string) {
+            gsap.from(element, {
+                opacity: 0,
+                duration: 0.75,
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top center",
+                    toggleActions: "restart none none reverse",
+                },
+            });
+        }
+
+        fadePage("#about");
+        fadePage("#projects");
+        fadePage("#contact");
+        
+        // gsap.from("#contact", {
+        //     opacity: 0, duration: 0.75,
+        //     scrollTrigger: {
+        //         trigger: "#contact",
+        //         start: "top 70%",
+        //         end: "top top",
+        //         toggleActions: "restart none none reverse",
+        //     },
+        // });
     });
     
     
@@ -143,19 +163,23 @@
 
 <Welcome />
 
-<div bind:this={moveToScreen}>
-    <!-- <h1>tl_moveToScreen</h1> -->
-</div>
+<div bind:this={moveToScreen} />
+
+<div class="wait" />
 
 <div id="toScreen" />
-<Welcome />
 
-<Welcome />
+<div id="about">
+    <AboutMe />
+</div>
+
+<div id="projects">
+    <Projects />
+</div>
 
 <div id="fromScreen" />
-<div bind:this={moveFromScreen}>
-    <!-- <h1>tl_moveFromScreen</h1> -->
-</div>
+
+<div bind:this={moveFromScreen} /> 
 
 <div bind:this={contact} id="contact">
     <Contact />
@@ -188,5 +212,9 @@
         background-color: rgba(255, 255, 255, 1);
         box-shadow: 0 0 5px 0 rgba(0,0,0,0.1);
         transform: scale(1.05, 1.05);
+    }
+
+    .wait {
+        height: 100vh;
     }
 </style>
