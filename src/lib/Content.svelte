@@ -137,16 +137,9 @@
 
 <svelte:window on:resize={update} bind:scrollY={scrollY} />
 
-<nav id="top">
-    <a href="#toScreen"> To Screen </a>
-    <a href="#fromScreen"> from Screen </a>
-    <a href="#contact"> Contact </a>
-</nav>
 {#if scrollY > 200}
     <a class="top-btn" href="#top"> <i class="fa-solid fa-arrow-up"></i> </a>
 {/if}
-
-
 
 <Welcome />
 
@@ -171,31 +164,13 @@
 <style>
     @import "../assets/fontawesome/css/all.css";
 
-    nav {
-        display: flex;
-        padding: 4vmin;
-        justify-content: flex-end;
-        gap: 2vmin;
-    }
-    nav > a {
-        background-color: rgba(255, 255, 255, 0.75);
-        border-radius: 3vmin;
-        padding: 2vmin 4vmin;
-        font-size: 1.75vmin;
-        transition: 200ms;
-        text-decoration: none;
-        color: black;
-    }
-    nav > a:hover, .top-btn:hover {
-        background-color: rgba(255, 255, 255, 1);
-        box-shadow: 0 0 5px 0 rgba(0,0,0,0.1);
-        transform: scale(1.05, 1.05);
-    }
+    
 
     .top-btn {
         z-index: 10;
         background-color: rgba(255, 255, 255, 0.75);
-        padding: 24px 29px;
+        width: 64px;
+        height: 64px;
         border-radius: 40px;
         position: fixed;
         bottom: 3vmin;
@@ -204,5 +179,8 @@
         transition: 200ms;
         text-decoration: none;
         color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 </style>
