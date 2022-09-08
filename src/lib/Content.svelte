@@ -165,7 +165,7 @@
 
 <div bind:this={moveToScreen} />
 
-<div class="wait" />
+<div class="wait" style="height: 100vh;" />
 
 <div id="toScreen" />
 
@@ -176,6 +176,8 @@
 <div id="projects">
     <Projects />
 </div>
+
+<div class="wait" style="height: 30vh;"/>
 
 <div id="fromScreen" />
 
@@ -212,9 +214,5 @@
         background-color: rgba(255, 255, 255, 1);
         box-shadow: 0 0 5px 0 rgba(0,0,0,0.1);
         transform: scale(1.05, 1.05);
-    }
-
-    .wait {
-        height: 100vh;
     }
 </style>
