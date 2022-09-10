@@ -12,6 +12,7 @@
     import LetsMeetImg from "../assets/projects/letsmeet.png";
     import PDPGasImg from "../assets/projects/pdpgas.png";
     import PlannerImg from "../assets/projects/planner.png";
+    import CsvEditor from "../assets/projects/csveditor.png";
 
 </script>
 
@@ -81,6 +82,18 @@
                         { name: "C#", backgroundColor: "#7A2E7D", foregroundColor: "#FFFFFF" },
                         { name: "HTML", backgroundColor: "#000000", foregroundColor: "#000000", onlyBorder: true },
                         { name: "CSS", backgroundColor: "#000000", foregroundColor: "#000000", onlyBorder: true },
+                    ]} 
+                />
+            </SwiperSlide>
+            <SwiperSlide>
+                <ProjectCard
+                    imageSrc={CsvEditor}
+                    title="CSV Editor"
+                    description="Python program for creating and editing CSV files." 
+                    languages={[
+                        { name: "Python", backgroundColor: "#3872A2", foregroundColor: "#FFFFFF" },
+                        { name: "Tkinter", backgroundColor: "#3872A2", foregroundColor: "#FFFFFF" },
+                        { name: "Pandas", backgroundColor: "#0B0153", foregroundColor: "#FFFFFF" },
                     ]} 
                 />
             </SwiperSlide>
