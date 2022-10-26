@@ -107,7 +107,7 @@
         <DirectionalLight shadow intensity={0.5} position={{ y: 50 }} />
 
         <!-- model -->
-        <GLTF url="../assets/room.gltf" castShadow useDraco={true} />
+        <GLTF url="../assets/myroom.gltf" castShadow useDraco={true} />
 
         <!-- Look at -->
         <!-- Start to Screen -->
